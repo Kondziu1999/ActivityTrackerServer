@@ -1,10 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { EndpointsComponent } from './endpoints/endpoints.component';
 import { UsersComponent } from './users/users.component';
 
 const routes: Routes = [
   {
-    path: "users", component: UsersComponent
+    path: "",
+    component: UsersComponent
+  },
+  {
+    path: "endpoints",
+    component: EndpointsComponent
   }
 ];
 
