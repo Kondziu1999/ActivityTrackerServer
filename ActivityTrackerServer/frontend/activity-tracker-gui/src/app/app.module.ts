@@ -3,13 +3,13 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SamplreComponent } from './samplre/samplre.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SamplreComponent
+    UsersComponent
   ],
   imports: [
     BrowserModule,

@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {SamplreComponent} from "./samplre/samplre.component";
+import { UsersComponent } from './users/users.component';
 
 const routes: Routes = [
   {
-    path: "sample", component: SamplreComponent
+    path: "users", component: UsersComponent
   }
 ];
 
