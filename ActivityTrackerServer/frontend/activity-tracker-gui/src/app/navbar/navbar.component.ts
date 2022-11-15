@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavbarOption } from '../helpers/navbar-option.enum';
 
 @Component({
   selector: 'app-navbar',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
+  public navbarOption = NavbarOption;
+	public selectedOption: NavbarOption = this.navbarOption.Users;
+
   constructor() { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
+
   }
 
+  public changeOption(option: NavbarOption): void {
+    this.selectedOption = option;
+  }
 }
