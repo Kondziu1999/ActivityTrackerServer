@@ -1,0 +1,22 @@
+<mat-toolbar color="primary" class="toolbar">
+    <div class="toolbar__app-name">
+        <mat-icon>assessment</mat-icon>
+        <span>
+            Activity Monitor
+        </span>
+    </div>
+    <span
+        class="toolbar__navigation-option"
+        [ngClass]="{'toolbar__navigation-option--selected': selectedOption === navbarOption.Users}"
+        (click)="changeOption(navbarOption.Users)"
+        [routerLink]="['/']">
+        users
+    </span>
+    <span
+        class="toolbar__navigation-option"
+        [ngClass]="{'toolbar__navigation-option--selected': selectedOption === navbarOption.Endpoints}"
+        (click)="changeOption(navbarOption.Endpoints)"
+        [routerLink]="['/endpoints']">
+        endpoints
+    </span>
+</mat-toolbar>

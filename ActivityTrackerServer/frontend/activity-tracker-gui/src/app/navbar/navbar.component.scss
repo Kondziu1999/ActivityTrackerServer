@@ -1,0 +1,31 @@
+.toolbar {
+    display: flex;
+    gap: 1.5rem;
+
+    &__app-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-right: 0.25rem;
+    }
+
+    @mixin option {
+        display: flex;
+        padding: 0.1rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+
+    &__navigation-option {
+        @include option;
+
+        &:hover {
+            background-color: var(--hover-color);
+        }
+
+        &--selected {
+            @include option;
+            background-color: var(--highlight-color);
+        }
+    }
+}
