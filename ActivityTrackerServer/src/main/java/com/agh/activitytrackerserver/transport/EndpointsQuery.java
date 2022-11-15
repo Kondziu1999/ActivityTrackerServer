@@ -10,6 +10,7 @@ public class EndpointsQuery {
     private int pageSize;
     private EndpointSortingProperty sortingProperty;
     private SortingDirection sortingDirection;
+    private TimeRange timeRange;
     private String endpointName;
     private String activityUserId;
 }

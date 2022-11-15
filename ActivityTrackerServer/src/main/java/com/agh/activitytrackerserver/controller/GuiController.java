@@ -10,6 +10,7 @@ import com.agh.activitytrackerserver.repository.UserLogRepository;
 import com.agh.activitytrackerserver.transport.EndpointNameWithCount;
 import com.agh.activitytrackerserver.transport.EndpointsQuery;
 import com.agh.activitytrackerserver.transport.GetLogsForUserQuery;
+import com.agh.activitytrackerserver.transport.UsersWithOverviewQuery;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +40,10 @@ public class GuiController {
         return ResponseEntity.ok(user.get());
     }
 
-    @GetMapping("/getUsersWithOverview")
-    public ResponseEntity<List<ActivityUserWithOverviewStatistics>> getActivityUsers(@RequestParam int page, @RequestParam int pageSize) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+    @PostMapping("/getUsersWithOverview")
+    public ResponseEntity<List<ActivityUserWithOverviewStatistics>> getActivityUsers(@RequestBody() UsersWithOverviewQuery query) {
 
-        var usersWithLogsCount = userLogRepository.getUserIdsWithMostActivity(pageable);
+        var usersWithLogsCount = userLogRepository.getUserIdsWithMostActivity(query);
         var userIds = usersWithLogsCount.stream().map(UserWithLogsCount::getActivityUserId).collect(Collectors.toList());
         var users = activityUserRepository.findAllById(userIds);
 
