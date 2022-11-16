@@ -1,6 +1,4 @@
-import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { NavbarOption } from '../helpers/navbar-option.enum';
 
