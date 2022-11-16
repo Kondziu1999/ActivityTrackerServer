@@ -60,13 +60,15 @@ public class GuiController {
     }
 
     @PostMapping("/getLogsForUser")
-    public ResponseEntity<List<UserLog>> getActivityUsers(@RequestBody() GetLogsForUserQuery query) {
+    public ResponseEntity<PageResponse<UserLog>> getActivityUsers(@RequestBody() GetLogsForUserQuery query) {
         if(query.getSessionId() == null) {
             var logs = userLogRepository.findAllByActivityUserId(query.getUserId(), PageRequest.of(query.getPage(), query.getPageSize()));
-            return ResponseEntity.ok(logs);
+            var total = userLogRepository.countAllByActivityUserId(query.getUserId());
+            return ResponseEntity.ok(new PageResponse<>(logs, total));
         } else {
             var logs = userLogRepository.findAllByActivityUserIdAndUserSessionId(query.getUserId(), query.getSessionId(), PageRequest.of(query.getPage(), query.getPageSize()));
-            return ResponseEntity.ok(logs);
+            var total = userLogRepository.countAllByActivityUserIdAndUserSessionId(query.getUserId(), query.getSessionId());
+            return ResponseEntity.ok(new PageResponse<>(logs, total));
         }
     }
 

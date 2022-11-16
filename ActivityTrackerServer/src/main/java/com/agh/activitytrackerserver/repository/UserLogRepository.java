@@ -18,7 +18,10 @@ public interface UserLogRepository extends JpaRepository<UserLog, Integer>, Cust
 //    List<UserWithLogsCount> getUserIdsWithMostActivity(Pageable pageable);
 
     List<UserLog> findAllByActivityUserId(String userId, Pageable pageable);
+    long countAllByActivityUserId(String userId);
 
     List<UserLog> findAllByActivityUserIdAndUserSessionId(String userId, String userSessionId, Pageable pageable);
+
+    long countAllByActivityUserIdAndUserSessionId(String userId, String userSessionId);
 
 }
