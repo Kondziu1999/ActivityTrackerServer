@@ -3,10 +3,8 @@ package com.agh.activitytrackerserver.repository;
 import com.agh.activitytrackerclient.models.UserLog;
 
 import com.agh.activitytrackerclient.models.UserWithLogsCount;
-import com.agh.activitytrackerserver.transport.EndpointNameWithCount;
-import com.agh.activitytrackerserver.transport.EndpointsQuery;
-import com.agh.activitytrackerserver.transport.TimeRange;
-import com.agh.activitytrackerserver.transport.UsersWithOverviewQuery;
+import com.agh.activitytrackerserver.transport.*;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -26,12 +24,16 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         this.em = em;
     }
     @Override
-    public List<EndpointNameWithCount> findMostPopularEndpointNames(EndpointsQuery query) {
+    public PageResponse<EndpointNameWithCount> findMostPopularEndpointNames(EndpointsQuery query) {
         CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
         CriteriaQuery<EndpointNameWithCount> q = criteriaBuilder
                 .createQuery(EndpointNameWithCount.class);
 
+        CriteriaQuery<String> cq = criteriaBuilder.createQuery(String.class);
+
         Root<UserLog> root = q.from(UserLog.class);
+
+        cq.select(cq.from(UserLog.class).get("endpoint")).distinct(true);
 
         q.multiselect(root.get("endpoint"), criteriaBuilder.count(root));
 
@@ -49,7 +51,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
                 q.orderBy(criteriaBuilder.desc(criteriaBuilder.count(root.get("endpoint"))));
                 break;
         };
-        ArrayList<Predicate> predicates = new ArrayList<Predicate>();
+        ArrayList<Predicate> predicates = new ArrayList<>();
 
         var ep = query.getEndpointName();
         if(ep != null && ep.length() > 0) {
@@ -74,21 +76,29 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
 
         if (!predicates.isEmpty()) {
             q.where(predicates.toArray(new Predicate[0]));
+            cq.where(predicates.toArray(new Predicate[0]));
         }
 
-        return em.createQuery(q)
-                .setFirstResult(query.getPage())
+        List<EndpointNameWithCount> results = em.createQuery(q)
+                .setFirstResult(query.getPage() * query.getPageSize())
                 .setMaxResults(query.getPageSize())
                 .getResultList();
+
+        List<String> uniqueEndpoints = em.createQuery(cq).getResultList();
+
+        return new PageResponse<>(results, uniqueEndpoints.size());
     }
 
     @Override
-    public List<UserWithLogsCount> getUserIdsWithMostActivity(UsersWithOverviewQuery query) {
+    public PageResponse<UserWithLogsCount> getUserIdsWithMostActivity(UsersWithOverviewQuery query) {
         CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
         CriteriaQuery<UserWithLogsCount> q = criteriaBuilder
                 .createQuery(UserWithLogsCount.class);
 
         Root<UserLog> root = q.from(UserLog.class);
+
+        CriteriaQuery<String> cq = criteriaBuilder.createQuery(String.class);
+        cq.select(cq.from(UserLog.class).get("activityUserId")).distinct(true);
 
         q.multiselect(root.get("activityUserId"), criteriaBuilder.count(root));
 
@@ -121,9 +131,14 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
             q.where(predicates.toArray(new Predicate[0]));
         }
 
-        return em.createQuery(q)
-                .setFirstResult(query.getPage())
-                .setMaxResults(query.getPageSize())
-                .getResultList();
+        List<UserWithLogsCount> results = em.createQuery(q)
+            .setFirstResult(query.getPage() * query.getPageSize())
+            .setMaxResults(query.getPageSize())
+            .getResultList();
+
+        List<String> uniqueUsers = em.createQuery(cq).getResultList();
+
+
+        return new PageResponse<>(results, uniqueUsers.size());
     }
 }

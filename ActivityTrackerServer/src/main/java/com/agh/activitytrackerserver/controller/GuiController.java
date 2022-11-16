@@ -7,10 +7,7 @@ import com.agh.activitytrackerclient.models.UserLog;
 import com.agh.activitytrackerclient.models.UserWithLogsCount;
 import com.agh.activitytrackerserver.repository.ActivityUserRepository;
 import com.agh.activitytrackerserver.repository.UserLogRepository;
-import com.agh.activitytrackerserver.transport.EndpointNameWithCount;
-import com.agh.activitytrackerserver.transport.EndpointsQuery;
-import com.agh.activitytrackerserver.transport.GetLogsForUserQuery;
-import com.agh.activitytrackerserver.transport.UsersWithOverviewQuery;
+import com.agh.activitytrackerserver.transport.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -41,16 +38,16 @@ public class GuiController {
     }
 
     @PostMapping("/getUsersWithOverview")
-    public ResponseEntity<List<ActivityUserWithOverviewStatistics>> getActivityUsers(@RequestBody() UsersWithOverviewQuery query) {
+    public ResponseEntity<PageResponse<ActivityUserWithOverviewStatistics>> getActivityUsers(@RequestBody() UsersWithOverviewQuery query) {
 
         var usersWithLogsCount = userLogRepository.getUserIdsWithMostActivity(query);
-        var userIds = usersWithLogsCount.stream().map(UserWithLogsCount::getActivityUserId).collect(Collectors.toList());
+        var userIds = usersWithLogsCount.getPage().stream().map(UserWithLogsCount::getActivityUserId).collect(Collectors.toList());
         var users = activityUserRepository.findAllById(userIds);
 
         var usersWithActivity = users.stream().map(user -> {
             var data = new ActivityUserWithOverviewStatistics();
             data.setUser(user);
-            data.setActivitiesCount(usersWithLogsCount.stream()
+            data.setActivitiesCount(usersWithLogsCount.getPage().stream()
                     .filter(x -> Objects.equals(x.getActivityUserId(), user.getId()))
                     .findFirst()
                     .get()
@@ -59,7 +56,7 @@ public class GuiController {
             return data;
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(usersWithActivity);
+        return ResponseEntity.ok(new PageResponse<>(usersWithActivity, usersWithLogsCount.getTotalResults()));
     }
 
     @PostMapping("/getLogsForUser")
@@ -74,7 +71,7 @@ public class GuiController {
     }
 
     @PostMapping("/getEndpointsWithFilter")
-    public ResponseEntity<List<EndpointNameWithCount>> getEndpointsWithFilter(@RequestBody() EndpointsQuery query) {
+    public ResponseEntity<PageResponse<EndpointNameWithCount>> getEndpointsWithFilter(@RequestBody() EndpointsQuery query) {
         return ResponseEntity.ok(userLogRepository.findMostPopularEndpointNames(query));
     }
 
