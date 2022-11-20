@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { NavbarOption } from '../helpers/navbar-option.enum';
 
 @Component({
@@ -8,12 +9,15 @@ import { NavbarOption } from '../helpers/navbar-option.enum';
 })
 export class NavbarComponent implements OnInit {
 
+  private readonly frontedUrl = environment.frontendUrl;
+
   public navbarOption = NavbarOption;
-	public selectedOption: NavbarOption = this.navbarOption.Users;
+  public selectedOption: NavbarOption;
 
   constructor() { }
 
   public ngOnInit(): void {
+    this.selectedOption = window.location.href === this.frontedUrl ? this.navbarOption.Users : this.navbarOption.Endpoints;
 
   }
 
