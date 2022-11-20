@@ -97,7 +97,7 @@ export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
         ),
         tap(data => {
           this.isLoadingResults = false;
-          this.isRateLimitReached = data.page === [];
+          this.isRateLimitReached = data.page.length === 0;
           this.resultsLength = data.totalResults;
         }),
       )
