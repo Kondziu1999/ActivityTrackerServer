@@ -1,4 +1,4 @@
-import { SortingDirection } from "./common-models";
+import { SortingDirection, TimeRange } from "./common-models";
 
 export interface Log {
     id: number;
@@ -31,5 +31,6 @@ export interface UserWithActivitiesCount {
 export interface UsersOverviewQuery {
     page: number;
     pageSize: number;
+    timeRange?: TimeRange;
     sortingDirection: SortingDirection;
 };
