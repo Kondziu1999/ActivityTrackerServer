@@ -1,5 +1,5 @@
 
-<div style="display: flex">
+<div style="display: flex; padding-top: 20px">
   <mat-form-field>
     <input matInput placeholder="Endpoint name..." #input>
   </mat-form-field>
@@ -13,7 +13,7 @@
       <ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field style="padding-left: 20px">
       <input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="Date to" formControlName="to"
              [min]="timesForm.get('from').value">
 
