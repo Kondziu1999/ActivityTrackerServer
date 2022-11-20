@@ -129,6 +129,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
 
         if (!predicates.isEmpty()) {
             q.where(predicates.toArray(new Predicate[0]));
+            cq.where(predicates.toArray(new Predicate[0]));
         }
 
         List<UserWithLogsCount> results = em.createQuery(q)
