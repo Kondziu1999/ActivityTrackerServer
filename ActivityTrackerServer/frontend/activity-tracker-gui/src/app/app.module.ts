@@ -19,6 +19,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule} from "@angular-material-components/datetime-picker";
 import {ReactiveFormsModule} from "@angular/forms";
+import { UsersFilterTableComponent } from './users-filter-table/users-filter-table.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {ReactiveFormsModule} from "@angular/forms";
     UsersComponent,
     EndpointsComponent,
     NavbarComponent,
-    EndpointsFilterTableComponent
+    EndpointsFilterTableComponent,
+    UsersFilterTableComponent
   ],
   imports: [
     BrowserModule,
