@@ -20,6 +20,7 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 import {NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule} from "@angular-material-components/datetime-picker";
 import {ReactiveFormsModule} from "@angular/forms";
 import { UsersFilterTableComponent } from './users-filter-table/users-filter-table.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { UsersFilterTableComponent } from './users-filter-table/users-filter-tab
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
