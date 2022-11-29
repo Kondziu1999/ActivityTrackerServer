@@ -136,7 +136,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         if (username != null && username.length() > 0) {
             uniqueUsers = uniqueUsers
                     .stream()
-                    .filter(x -> x.getUsername().matches(username))
+                    .filter(x -> x.getUsername().toLowerCase().matches(".*"+ username.toLowerCase() + ".*"))
                     .collect(Collectors.toList());
         }
 
