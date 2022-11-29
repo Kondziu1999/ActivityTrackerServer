@@ -73,7 +73,7 @@ export class UserLogsComponent implements OnInit, AfterViewInit {
           userId: +this.userId,
           page: this.paginator.pageIndex,
           pageSize: this.paginator.pageSize,
-          sessionId: this.input.nativeElement.value ?? null,
+          sessionId: null,
         }
         return query;
       }),
