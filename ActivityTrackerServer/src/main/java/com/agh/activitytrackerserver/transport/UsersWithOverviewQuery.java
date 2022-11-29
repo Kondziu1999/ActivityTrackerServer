@@ -8,6 +8,7 @@ import lombok.Setter;
 public class UsersWithOverviewQuery {
     private int page;
     private int pageSize;
+    private String username;
     private TimeRange timeRange;
     private SortingDirection sortingDirection;
 }
