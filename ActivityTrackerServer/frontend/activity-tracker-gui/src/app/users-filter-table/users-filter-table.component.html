@@ -1,5 +1,8 @@
 
 <div style="display: flex; padding-top: 20px">
+    <mat-form-field>
+      <input matInput placeholder="Username..." #input>
+    </mat-form-field>
     <form style="padding-left: 20px" [formGroup]="timesForm">
       <mat-form-field>
         <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="Date from" formControlName="from">

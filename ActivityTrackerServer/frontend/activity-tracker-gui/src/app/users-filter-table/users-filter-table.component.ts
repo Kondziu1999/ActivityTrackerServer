@@ -48,6 +48,7 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('input') input: ElementRef;
 
   usersDs: UsersDs;
 
@@ -62,10 +63,20 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
     this.sort.sortChange.subscribe(
       () => (this.paginator.pageIndex = 0)
     );
+
+    const inputChange = fromEvent(this.input.nativeElement,'keyup')
+    .pipe(
+      distinctUntilChanged(),
+      debounceTime(150),
+    )
+    .pipe(
+      tap(() => this.paginator.pageIndex = 0)
+    );
     
     merge(
       this.sort.sortChange,
       this.paginator.page,
+      inputChange,
       this.timesForm.valueChanges
     )
     .pipe(
@@ -73,6 +84,7 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
         const query: UsersOverviewQuery = {
           page: this.paginator.pageIndex,
           pageSize: this.paginator.pageSize,
+          username: this.input.nativeElement.value ?? null,
           timeRange: {
             from: (this.timesForm.get("from").value as Date).getTime(),
             to: (this.timesForm.get("to").value as Date).getTime(),
