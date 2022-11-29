@@ -48,7 +48,7 @@
     <h1 style="padding-top: 1rem; padding-left: 12px">
         User logs
     </h1>
-    <div class="mat-elevation-z8 logs-table">
+    <mat-card class="logs-table">
         <table
           mat-table
           [dataSource]="logsDs">
@@ -77,5 +77,5 @@
                        showFirstLastButtons
                        aria-label="Select page of periodic elements">
         </mat-paginator>
-      </div>
+    </mat-card>
 </div>
