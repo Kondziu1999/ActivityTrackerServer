@@ -13,6 +13,7 @@ export interface LogsForUserQuery {
     userId: number;
     page: number;
     pageSize: number;
+    sessionId?: string;
 };
 
 export interface User {

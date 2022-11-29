@@ -16,7 +16,7 @@
                     Username:
                 </span>
                 <span class="data-field__value">
-                    {{ user.username }}
+                    {{ user?.username }}
                 </span>
             </div>
             <div class="data-field">
@@ -24,7 +24,7 @@
                     Id:
                 </span>
                 <span class="data-field__value">
-                    {{ user.id }}
+                    {{ user?.id }}
                 </span>
             </div>
             <div class="data-field">
@@ -32,7 +32,7 @@
                     Name:
                 </span>
                 <span class="data-field__value">
-                    {{ user.name }}
+                    {{ user?.name }}
                 </span>
             </div>
             <div class="data-field">
@@ -40,7 +40,7 @@
                     Email address:
                 </span>
                 <span class="data-field__value">
-                    {{ user.email }}
+                    {{ user?.email }}
                 </span>
             </div>
         </mat-card-content>
@@ -48,4 +48,34 @@
     <h1 style="padding-top: 1rem; padding-left: 12px">
         User logs
     </h1>
+    <div class="mat-elevation-z8">
+        <table
+          mat-table
+          [dataSource]="logsDs">
+          <ng-container matColumnDef="userSessionId">
+            <th mat-header-cell *matHeaderCellDef> User session id </th>
+            <td mat-cell *matCellDef="let element"> {{element.userSessionId}} </td>
+          </ng-container>
+          <ng-container matColumnDef="endpoint">
+            <th mat-header-cell *matHeaderCellDef> Endpoint </th>
+            <td mat-cell *matCellDef="let element"> {{element.endpoint}} </td>
+          </ng-container>
+          <ng-container matColumnDef="activityStart">
+            <th mat-header-cell *matHeaderCellDef> Activity start </th>
+            <td mat-cell *matCellDef="let element"> {{element.activityStart}} </td>
+          </ng-container>
+          <ng-container matColumnDef="activityEnd">
+            <th mat-header-cell *matHeaderCellDef> Activity end </th>
+            <td mat-cell *matCellDef="let element"> {{element.activityEnd}} </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr class="row-hover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[10, 20, 30]"
+                       pageSize="10"
+                       [length]="resultsLength"
+                       showFirstLastButtons
+                       aria-label="Select page of periodic elements">
+        </mat-paginator>
+      </div>
 </div>
