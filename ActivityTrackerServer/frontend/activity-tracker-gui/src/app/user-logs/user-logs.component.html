@@ -1,1 +1,51 @@
-<p>user-logs works!</p>
+<div style="padding-top: 20px; padding-left: 7px;">
+    <div class="header">
+        <button mat-icon-button color="primary" (click)="goBackToUsers()">
+            <mat-icon class="back-arrow">
+                keyboard_arrow_left
+            </mat-icon>
+        </button>
+    <h1>
+        User info
+    </h1>
+    </div>
+    <mat-card class="card">
+        <mat-card-content class="card__content">
+            <div class="data-field">
+                <span class="data-field__header">
+                    Username:
+                </span>
+                <span class="data-field__value">
+                    {{ user.username }}
+                </span>
+            </div>
+            <div class="data-field">
+                <span class="data-field__header">
+                    Id:
+                </span>
+                <span class="data-field__value">
+                    {{ user.id }}
+                </span>
+            </div>
+            <div class="data-field">
+                <span class="data-field__header">
+                    Name:
+                </span>
+                <span class="data-field__value">
+                    {{ user.name }}
+                </span>
+            </div>
+            <div class="data-field">
+                <span class="data-field__header">
+                    Email address:
+                </span>
+                <span class="data-field__value">
+                    {{ user.email }}
+                </span>
+            </div>
+        </mat-card-content>
+    </mat-card>
+    <h1 style="padding-top: 1rem; padding-left: 12px">
+        User logs
+    </h1>
+</div>

@@ -17,7 +17,7 @@ export class UsersService {
     return this.http.post<PageResponse<UserWithActivitiesCount>>(`${this.apiUrl}/getUsersWithOverview`, query);
   }
 
-  public getUser(userId: number): Observable<User> {
+  public getUser(userId: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/getActivityUserWithoutLogs?userId=${userId}`);
   }
 

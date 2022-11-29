@@ -22,6 +22,9 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { UsersFilterTableComponent } from './users-filter-table/users-filter-table.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { UserLogsComponent } from './user-logs/user-logs.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import { UserLogsComponent } from './user-logs/user-logs.component';
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
     ReactiveFormsModule,
-    NgxChartsModule
+    NgxChartsModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
