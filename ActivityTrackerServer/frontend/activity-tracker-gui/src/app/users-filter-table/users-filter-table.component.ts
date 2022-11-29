@@ -2,10 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { SortingDirection } from '../models/common-models';
-import { UsersOverviewQuery } from '../models/users-models';
+import { UsersOverviewQuery, UserWithActivitiesCount } from '../models/users-models';
 import { UsersService } from '../service/users.service';
 import { UsersDs } from '../users/users-ds';
 
@@ -52,7 +53,7 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
 
   usersDs: UsersDs;
 
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService, private router: Router) { }
 
   public ngOnInit(): void {
     this.usersDs = new UsersDs(this.usersService);
@@ -104,6 +105,10 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
       }),
     )
     .subscribe();
+  }
+
+  public navigateToUserLogs(userWithActivitiesCount: UserWithActivitiesCount): void {
+    this.router.navigate(['/logs-for-user', userWithActivitiesCount.user.id]);
   }
 
 }
