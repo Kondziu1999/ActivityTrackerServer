@@ -21,6 +21,7 @@ import {NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModu
 import {ReactiveFormsModule} from "@angular/forms";
 import { UsersFilterTableComponent } from './users-filter-table/users-filter-table.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { UserLogsComponent } from './user-logs/user-logs.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     EndpointsComponent,
     NavbarComponent,
     EndpointsFilterTableComponent,
-    UsersFilterTableComponent
+    UsersFilterTableComponent,
+    UserLogsComponent
   ],
   imports: [
     BrowserModule,
