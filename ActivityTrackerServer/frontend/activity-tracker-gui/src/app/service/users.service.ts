@@ -14,10 +14,10 @@ export class UsersService {
   constructor(private http: HttpClient) { }
 
   public getUsersOverview(query: UsersOverviewQuery): Observable<PageResponse<UserWithActivitiesCount>> {
-    return this.http.post<PageResponse<UserWithActivitiesCount>>(`${this.apiUrl}/getUsersWithOverview`, query)
+    return this.http.post<PageResponse<UserWithActivitiesCount>>(`${this.apiUrl}/getUsersWithOverview`, query);
   }
 
-  public getUser(userId: number): Observable<User> {
+  public getUser(userId: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/getActivityUserWithoutLogs?userId=${userId}`);
   }
 

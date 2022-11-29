@@ -1,5 +1,8 @@
 
 <div style="display: flex; padding-top: 20px">
+    <mat-form-field>
+      <input matInput placeholder="Username..." #input>
+    </mat-form-field>
     <form style="padding-left: 20px" [formGroup]="timesForm">
       <mat-form-field>
         <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="Date from" formControlName="from">
@@ -14,7 +17,7 @@
       </mat-form-field>
     </form>
   </div>
-  <div class="mat-elevation-z8">
+  <mat-card style="padding: 5px 0;">
     <table
       mat-table
       [dataSource]="usersDs"
@@ -47,7 +50,12 @@
         <td mat-cell *matCellDef="let element"> {{element.activitiesCount}} </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="row-hover" mat-row *matRowDef="let row; columns: displayedColumns;"(click)="navigateToUserLogs(row)"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          No data matching the filters
+        </td>
+      </tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 20, 30]"
                    pageSize="10"
@@ -55,5 +63,5 @@
                    showFirstLastButtons
                    aria-label="Select page of periodic elements">
     </mat-paginator>
-  </div>
+  </mat-card>
   

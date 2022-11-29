@@ -2,10 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { SortingDirection } from '../models/common-models';
-import { UsersOverviewQuery } from '../models/users-models';
+import { UsersOverviewQuery, UserWithActivitiesCount } from '../models/users-models';
 import { UsersService } from '../service/users.service';
 import { UsersDs } from '../users/users-ds';
 
@@ -48,10 +49,11 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('input') input: ElementRef;
 
   usersDs: UsersDs;
 
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService, private router: Router) { }
 
   public ngOnInit(): void {
     this.usersDs = new UsersDs(this.usersService);
@@ -62,10 +64,20 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
     this.sort.sortChange.subscribe(
       () => (this.paginator.pageIndex = 0)
     );
+
+    const inputChange = fromEvent(this.input.nativeElement,'keyup')
+    .pipe(
+      distinctUntilChanged(),
+      debounceTime(150),
+    )
+    .pipe(
+      tap(() => this.paginator.pageIndex = 0)
+    );
     
     merge(
       this.sort.sortChange,
       this.paginator.page,
+      inputChange,
       this.timesForm.valueChanges
     )
     .pipe(
@@ -73,6 +85,7 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
         const query: UsersOverviewQuery = {
           page: this.paginator.pageIndex,
           pageSize: this.paginator.pageSize,
+          username: this.input.nativeElement.value ?? null,
           timeRange: {
             from: (this.timesForm.get("from").value as Date).getTime(),
             to: (this.timesForm.get("to").value as Date).getTime(),
@@ -92,6 +105,10 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
       }),
     )
     .subscribe();
+  }
+
+  public navigateToUserLogs(userWithActivitiesCount: UserWithActivitiesCount): void {
+    this.router.navigate(['/logs-for-user', userWithActivitiesCount.user.id]);
   }
 
 }

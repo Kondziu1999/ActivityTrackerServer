@@ -13,6 +13,7 @@ export interface LogsForUserQuery {
     userId: number;
     page: number;
     pageSize: number;
+    sessionId?: string;
 };
 
 export interface User {
@@ -31,6 +32,7 @@ export interface UserWithActivitiesCount {
 export interface UsersOverviewQuery {
     page: number;
     pageSize: number;
+    username?: string;
     timeRange?: TimeRange;
     sortingDirection: SortingDirection;
 };

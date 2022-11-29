@@ -24,7 +24,7 @@
   </form>
 </div>
 
-<div class="mat-elevation-z8">
+<mat-card style="padding: 5px 0;">
   <table
     mat-table
     [dataSource]="endpointsDs"
@@ -50,6 +50,11 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        No data matching the filters
+      </td>
+    </tr>
   </table>
 
   <mat-paginator [pageSizeOptions]="[10, 20, 30]"
@@ -58,4 +63,4 @@
                  showFirstLastButtons
                  aria-label="Select page of periodic elements">
   </mat-paginator>
-</div>
+</mat-card>
