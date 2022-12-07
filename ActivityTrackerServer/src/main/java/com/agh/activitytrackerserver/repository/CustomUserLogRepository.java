@@ -17,5 +17,13 @@ public interface CustomUserLogRepository {
 
     PageResponse<UserWithLogsCount> getUserIdsWithMostActivity(UsersWithOverviewQuery query);
 
+    List<UserLog> getAllUserLogs(String userId, TimeRange timeRange, SortingDirection sortingDirection);
+
+    PageResponse<UserLog> getUserLogs(GetLogsForUserQuery query);
+
     PageResponse<UserLog> getEndpointLogs(EndpointLogsQuery query);
+
+    List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange);
+
+    PageResponse<EndpointNameWithCount> getUserLogsCountPerEndpoint(UserLogsCountPerEndpointQuery query);
 }

@@ -7,13 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class GetLogsForUserQuery {
-    private String userId;
+@AllArgsConstructor
+public class UserLogsCountPerEndpointQuery {
     private int page;
     private int pageSize;
-    private String sessionId;
     private TimeRange timeRange;
+    private String userId;
     private SortingDirection sortingDirection;
 }

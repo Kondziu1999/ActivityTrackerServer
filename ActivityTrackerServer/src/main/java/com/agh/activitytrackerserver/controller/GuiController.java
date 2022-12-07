@@ -13,8 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,16 +59,107 @@ public class GuiController {
     }
 
     @PostMapping("/getLogsForUser")
-    public ResponseEntity<PageResponse<UserLog>> getActivityUsers(@RequestBody() GetLogsForUserQuery query) {
-        if(query.getSessionId() == null) {
-            var logs = userLogRepository.findAllByActivityUserId(query.getUserId(), PageRequest.of(query.getPage(), query.getPageSize()));
-            var total = userLogRepository.countAllByActivityUserId(query.getUserId());
-            return ResponseEntity.ok(new PageResponse<>(logs, total));
-        } else {
-            var logs = userLogRepository.findAllByActivityUserIdAndUserSessionId(query.getUserId(), query.getSessionId(), PageRequest.of(query.getPage(), query.getPageSize()));
-            var total = userLogRepository.countAllByActivityUserIdAndUserSessionId(query.getUserId(), query.getSessionId());
-            return ResponseEntity.ok(new PageResponse<>(logs, total));
+    public ResponseEntity<PageResponse<UserLog>> getLogsForUser(@RequestBody() GetLogsForUserQuery query) {
+        return ResponseEntity.ok(userLogRepository.getUserLogs(query));
+    }
+
+    @PostMapping("/getUserSessionsStats")
+    public ResponseEntity<UserSessionsStats> getUserSessionsStats(@RequestBody() UserSessionsStatsQuery query) {
+        var sessionsMap = new HashMap<String, List<UserLog>>();
+        var endpointsMap = new HashMap<String, Integer>();
+
+        var logs = userLogRepository.getAllUserLogs(query.getUserId(), query.getTimeRange(), SortingDirection.DESC);
+
+        for (var log : logs) {
+            if(!endpointsMap.containsKey(log.getEndpoint())) {
+                endpointsMap.put(log.getEndpoint(), 1);
+            } else {
+                endpointsMap.put(log.getEndpoint(), endpointsMap.get(log.getEndpoint()) + 1);
+            }
+
+            if(!sessionsMap.containsKey(log.getUserSessionId())) {
+                var list = new LinkedList<UserLog>();
+                list.add(log);
+                sessionsMap.put(log.getUserSessionId(), list);
+            }
+            sessionsMap.get(log.getUserSessionId()).add(log);
         }
+
+        var sessionsCount = sessionsMap.size();
+        var maximumActivityCountsPerSession = Integer.MIN_VALUE;
+        var minimumActivityCountsPerSession = Integer.MAX_VALUE;
+        var totalActivitiesCount = 0;
+        var mostPopularEndpoint = "";
+        var mostPopularEndpointCount = 0;
+
+        for(var key : sessionsMap.keySet()) {
+            var logsForSession = sessionsMap.get(key);
+            var logsForSessionSize = logsForSession.size();
+            totalActivitiesCount += logsForSession.size();
+
+            if(logsForSessionSize < minimumActivityCountsPerSession) {
+                minimumActivityCountsPerSession = logsForSessionSize;
+            }
+            if(logsForSessionSize > maximumActivityCountsPerSession) {
+                maximumActivityCountsPerSession =logsForSessionSize;
+            }
+        }
+
+        for(var key : endpointsMap.keySet()) {
+            var count = endpointsMap.get(key);
+
+            if(mostPopularEndpointCount < count) {
+                mostPopularEndpointCount = count;
+                mostPopularEndpoint = key;
+            }
+        }
+
+        return ResponseEntity.ok(
+            new UserSessionsStats(
+                new ArrayList<>(sessionsMap.keySet()),
+                sessionsCount,
+                maximumActivityCountsPerSession,
+                minimumActivityCountsPerSession,
+                totalActivitiesCount,
+                mostPopularEndpoint,
+                mostPopularEndpointCount
+            )
+        );
+    }
+
+    @PostMapping("/getUserLogsCount")
+    public ResponseEntity<?> getUserLogsCount(@RequestBody() UserLogsCountQuery query) {
+        var logs = userLogRepository.getUserLogsForTimeRangeAsc(query.getUserId(), query.getTimeRange());
+
+        var buckets = new LinkedList<UserLogsCountBucket>();
+
+        if(logs.size() > 0) {
+            var firstTimestamp = logs.get(0).getActivityEnd();
+            var lastTimestamp = logs.get(logs.size() - 1).getActivityEnd();
+
+            while (firstTimestamp <= lastTimestamp) {
+                var bucket = new UserLogsCountBucket();
+                bucket.setFrom(firstTimestamp);
+                bucket.setTo(firstTimestamp + query.getBucketSize());
+                firstTimestamp = firstTimestamp + query.getBucketSize();
+                buckets.add(bucket);
+            }
+
+            var currentBucketIdx = 0;
+
+            for(var log : logs) {
+                while (log.getActivityEnd() > buckets.get(currentBucketIdx).getTo()) {
+                    currentBucketIdx += 1;
+                }
+                buckets.get(currentBucketIdx).incrementCount();
+            }
+        }
+        return ResponseEntity.ok(buckets);
+    }
+
+    @PostMapping("/getUserLogsCountPerEndpoint")
+    public ResponseEntity<?> getUserLogsCountPerEndpoint(@RequestBody UserLogsCountPerEndpointQuery query) {
+        return ResponseEntity.ok(userLogRepository.getUserLogsCountPerEndpoint(query));
     }
 
     @PostMapping("/getEndpointsWithFilter")

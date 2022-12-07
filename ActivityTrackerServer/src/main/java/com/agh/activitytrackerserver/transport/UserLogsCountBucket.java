@@ -9,10 +9,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EndpointLogsQuery {
-    private String endpointName;
-    private int page;
-    private int pageSize;
-    private TimeRange timeRange;
-    private SortingDirection sortingDirection;
+public class UserLogsCountBucket {
+    private long from;
+    private long to;
+    private long count = 0;
+
+    public void incrementCount() {
+        this.count++;
+    }
 }
+
+

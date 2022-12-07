@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetLogsForUserQuery {
+public class UserSessionsStatsQuery {
     private String userId;
-    private int page;
-    private int pageSize;
-    private String sessionId;
     private TimeRange timeRange;
-    private SortingDirection sortingDirection;
 }
