@@ -77,4 +77,19 @@ public class GuiController {
         return ResponseEntity.ok(userLogRepository.findMostPopularEndpointNames(query));
     }
 
+    @PostMapping("/getEndpointHitsCount")
+    public ResponseEntity<?> getEndpointHitsForThisEndpointSince(@RequestBody() EndpointHitCountQuery query) {
+        return ResponseEntity.ok(userLogRepository.getEndpointHitCount(query));
+    }
+
+    @PostMapping("/getEndpointUserHitCount")
+    public ResponseEntity<?> getEndpointUserHits(@RequestBody() EndpointHitCountPerUserQuery query) {
+        return ResponseEntity.ok(userLogRepository.getEndpointHitCountPerUser(query));
+    }
+
+    @PostMapping("/getEndpointLogs")
+    public ResponseEntity<?> getEndpointLogs(@RequestBody() EndpointLogsQuery query) {
+        return ResponseEntity.ok(userLogRepository.getEndpointLogs(query));
+    }
+
 }

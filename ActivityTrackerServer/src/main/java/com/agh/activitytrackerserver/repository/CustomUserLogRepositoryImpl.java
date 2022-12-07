@@ -5,7 +5,7 @@ import com.agh.activitytrackerclient.models.UserLog;
 
 import com.agh.activitytrackerclient.models.UserWithLogsCount;
 import com.agh.activitytrackerserver.transport.*;
-import org.apache.catalina.User;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -28,6 +28,108 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         this.activityUserRepository = activityUserRepository;
         this.em = em;
     }
+
+    // cq - count query
+    // q - normal query
+
+    @Override
+    public PageResponse<UserLog> getEndpointLogs(EndpointLogsQuery query) {
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<UserLog> q = criteriaBuilder
+                .createQuery(UserLog.class);
+
+        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+
+        Root<UserLog> root = q.from(UserLog.class);
+        Root<UserLog> cRoot = cq.from(UserLog.class);
+
+        ArrayList<Predicate> predicates = new ArrayList<>();
+        ArrayList<Predicate> cPredicates = new ArrayList<>();
+
+        predicates.add(criteriaBuilder.equal(root.get("endpoint").as(String.class), query.getEndpointName()));
+        cPredicates.add(criteriaBuilder.equal(cRoot.get("endpoint").as(String.class), query.getEndpointName()));
+
+        predicates.addAll(getTimeRangePredicates(query.getTimeRange(), root, criteriaBuilder));
+        cPredicates.addAll(getTimeRangePredicates(query.getTimeRange(), cRoot, criteriaBuilder));
+
+        q.select(root);
+        cq.select(criteriaBuilder.count(cRoot));
+
+        q.where(predicates.toArray(new Predicate[0]));
+        cq.where(cPredicates.toArray(new Predicate[0]));
+
+        List<UserLog> logs = em.createQuery(q)
+                .setFirstResult(query.getPage() * query.getPageSize())
+                .setMaxResults(query.getPageSize())
+                .getResultList();
+
+        long total = em.createQuery(cq).getSingleResult();
+
+        return new PageResponse<>(logs, total);
+    }
+
+    @Override
+    public PageResponse<EndpointHitCountPerUser> getEndpointHitCountPerUser(EndpointHitCountPerUserQuery query) {
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<EndpointHitCountPerUser> q = criteriaBuilder
+                .createQuery(EndpointHitCountPerUser.class);
+
+        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+
+        Root<UserLog> root = q.from(UserLog.class);
+        Root<UserLog> cRoot = cq.from(UserLog.class);
+
+        ArrayList<Predicate> predicates = new ArrayList<>();
+        ArrayList<Predicate> cPredicates = new ArrayList<>();
+
+        predicates.add(criteriaBuilder.isNotNull(root.get("activityUserId")));
+        cPredicates.add(criteriaBuilder.isNotNull(cRoot.get("activityUserId")));
+
+        predicates.add(criteriaBuilder.equal(root.get("endpoint").as(String.class),  query.getEndpointName()));
+        cPredicates.add(criteriaBuilder.equal(cRoot.get("endpoint").as(String.class),  query.getEndpointName()));
+
+        predicates.addAll(getTimeRangePredicates(query.getTimeRange(), root, criteriaBuilder));
+        cPredicates.addAll(getTimeRangePredicates(query.getTimeRange(), cRoot, criteriaBuilder));
+
+        q.multiselect(root.get("activityUserId"), criteriaBuilder.count(root));
+        cq.select(criteriaBuilder.countDistinct(cRoot.get("activityUserId")));
+
+        q.groupBy(root.get("activityUserId"));
+
+        q.where(predicates.toArray(new Predicate[0]));
+        cq.where(cPredicates.toArray(new Predicate[0]));
+
+        List<EndpointHitCountPerUser> results = em.createQuery(q)
+                .setFirstResult(query.getPage() * query.getPageSize())
+                .setMaxResults(query.getPageSize())
+                .getResultList();
+
+        long total = em.createQuery(cq).getSingleResult();
+
+        return new PageResponse<>(results, total);
+    }
+
+    @Override
+    public EndpointHitCount getEndpointHitCount(EndpointHitCountQuery query) {
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<Long> q = criteriaBuilder
+                .createQuery(Long.class);
+
+        Root<UserLog> root = q.from(UserLog.class);
+
+        ArrayList<Predicate> predicates = new ArrayList<>();
+
+        predicates.add(criteriaBuilder.equal(root.get("endpoint").as(String.class),  query.getEndpointName()));
+        predicates.addAll(getTimeRangePredicates(query.getTimeRange(), root, criteriaBuilder));
+
+        q.select(criteriaBuilder.count(root));
+        q.where(predicates.toArray(new Predicate[0]));
+
+        long count = em.createQuery(q).getSingleResult();
+
+        return new EndpointHitCount(query.getEndpointName(), count);
+    }
+
     @Override
     public PageResponse<EndpointNameWithCount> findMostPopularEndpointNames(EndpointsQuery query) {
         CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
@@ -56,7 +158,8 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
             case DESC:
                 q.orderBy(criteriaBuilder.desc(criteriaBuilder.count(root.get("endpoint"))));
                 break;
-        };
+        }
+
         ArrayList<Predicate> predicates = new ArrayList<>();
         ArrayList<Predicate> cPredicates = new ArrayList<>();
 
@@ -77,7 +180,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
 
         if (!predicates.isEmpty()) {
             q.where(predicates.toArray(new Predicate[0]));
-            cq.where(predicates.toArray(new Predicate[0]));
+            cq.where(cPredicates.toArray(new Predicate[0]));
         }
 
         List<EndpointNameWithCount> results = em.createQuery(q)
@@ -113,7 +216,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
             case DESC:
                 q.orderBy(criteriaBuilder.desc(criteriaBuilder.count(root.get("activityUserId"))));
                 break;
-        };
+        }
         ArrayList<Predicate> predicates = new ArrayList<>();
         ArrayList<Predicate> cPredicates = new ArrayList<>();
 
@@ -123,10 +226,8 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         predicates.addAll(getTimeRangePredicates(query.getTimeRange(), root, criteriaBuilder));
         cPredicates.addAll(getTimeRangePredicates(query.getTimeRange(), cRoot, criteriaBuilder));
 
-        if (!predicates.isEmpty()) {
-            q.where(predicates.toArray(new Predicate[0]));
-            cq.where(cPredicates.toArray(new Predicate[0]));
-        }
+        q.where(predicates.toArray(new Predicate[0]));
+        cq.where(cPredicates.toArray(new Predicate[0]));
 
         List<String> uniqueUserIds = em.createQuery(cq).getResultList();
         var uniqueUsers = getActivityUsersWhereIdIn(uniqueUserIds);
