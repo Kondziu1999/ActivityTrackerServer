@@ -2,12 +2,18 @@
     display: flex;
 
     h1 {
-       padding-top: 4px; 
+       padding-top: 4px;
     }
 }
 
+.cards {
+  display: flex;
+  flex-direction: row;
+}
+
 .card {
-    max-width: 23rem;
+    min-width: 23rem;
+    width: fit-content;
     margin-left: 12px;
 
     &__content {

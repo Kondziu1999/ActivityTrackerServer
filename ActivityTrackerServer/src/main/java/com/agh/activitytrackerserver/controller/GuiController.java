@@ -8,8 +8,6 @@ import com.agh.activitytrackerclient.models.UserWithLogsCount;
 import com.agh.activitytrackerserver.repository.ActivityUserRepository;
 import com.agh.activitytrackerserver.repository.UserLogRepository;
 import com.agh.activitytrackerserver.transport.*;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +61,7 @@ public class GuiController {
         return ResponseEntity.ok(userLogRepository.getUserLogs(query));
     }
 
+    // General stats without session id filter
     @PostMapping("/getUserSessionsStats")
     public ResponseEntity<UserSessionsStats> getUserSessionsStats(@RequestBody() UserSessionsStatsQuery query) {
         var sessionsMap = new HashMap<String, List<UserLog>>();
@@ -128,14 +127,31 @@ public class GuiController {
     }
 
     @PostMapping("/getUserLogsCount")
-    public ResponseEntity<?> getUserLogsCount(@RequestBody() UserLogsCountQuery query) {
-        var logs = userLogRepository.getUserLogsForTimeRangeAsc(query.getUserId(), query.getTimeRange());
+    public ResponseEntity<LinkedList<UserLogsCountBucket>> getUserLogsCount(@RequestBody() UserLogsCountQuery query) {
+        var logs = userLogRepository.getUserLogsForTimeRangeAsc(query.getUserId(), query.getTimeRange(), query.getSessionId());
 
         var buckets = new LinkedList<UserLogsCountBucket>();
 
+
         if(logs.size() > 0) {
+
             var firstTimestamp = logs.get(0).getActivityEnd();
             var lastTimestamp = logs.get(logs.size() - 1).getActivityEnd();
+
+            if(firstTimestamp - query.getBucketSize() > query.getTimeRange().getFrom()) {
+                var startBucket = new UserLogsCountBucket();
+                startBucket.setFrom(query.getTimeRange().getFrom());
+                startBucket.setTo(query.getTimeRange().getFrom() + query.getBucketSize());
+                buckets.add(startBucket);
+            }
+
+            // To decrease interpolation interference
+            if(firstTimestamp - 2 * query.getBucketSize() > query.getTimeRange().getFrom()) {
+                var startBucket = new UserLogsCountBucket();
+                startBucket.setFrom(firstTimestamp - 2 * query.getBucketSize());
+                startBucket.setTo(firstTimestamp - query.getBucketSize());
+                buckets.add(startBucket);
+            }
 
             while (firstTimestamp <= lastTimestamp) {
                 var bucket = new UserLogsCountBucket();
@@ -143,6 +159,21 @@ public class GuiController {
                 bucket.setTo(firstTimestamp + query.getBucketSize());
                 firstTimestamp = firstTimestamp + query.getBucketSize();
                 buckets.add(bucket);
+            }
+
+            // To decrease interpolation interference
+            if(query.getTimeRange().getTo() > lastTimestamp + 2 * query.getBucketSize()) {
+                var endBucket = new UserLogsCountBucket();
+                endBucket.setFrom(lastTimestamp + query.getBucketSize());
+                endBucket.setTo(lastTimestamp + 2 * query.getBucketSize());
+                buckets.add(endBucket);
+            }
+
+            if(query.getTimeRange().getTo() > lastTimestamp + query.getBucketSize()) {
+                var endBucket = new UserLogsCountBucket();
+                endBucket.setFrom(query.getTimeRange().getTo() - query.getBucketSize());
+                endBucket.setTo(query.getTimeRange().getTo());
+                buckets.add(endBucket);
             }
 
             var currentBucketIdx = 0;
@@ -158,7 +189,7 @@ public class GuiController {
     }
 
     @PostMapping("/getUserLogsCountPerEndpoint")
-    public ResponseEntity<?> getUserLogsCountPerEndpoint(@RequestBody UserLogsCountPerEndpointQuery query) {
+    public ResponseEntity<PageResponse<EndpointNameWithCount>> getUserLogsCountPerEndpoint(@RequestBody UserLogsCountPerEndpointQuery query) {
         return ResponseEntity.ok(userLogRepository.getUserLogsCountPerEndpoint(query));
     }
 
@@ -168,12 +199,12 @@ public class GuiController {
     }
 
     @PostMapping("/getEndpointHitsCount")
-    public ResponseEntity<?> getEndpointHitsForThisEndpointSince(@RequestBody() EndpointHitCountQuery query) {
+    public ResponseEntity<EndpointHitCount> getEndpointHitsForThisEndpointSince(@RequestBody() EndpointHitCountQuery query) {
         return ResponseEntity.ok(userLogRepository.getEndpointHitCount(query));
     }
 
     @PostMapping("/getEndpointUserHitCount")
-    public ResponseEntity<?> getEndpointUserHits(@RequestBody() EndpointHitCountPerUserQuery query) {
+    public ResponseEntity<PageResponse<EndpointHitCountPerUser>> getEndpointUserHits(@RequestBody() EndpointHitCountPerUserQuery query) {
         return ResponseEntity.ok(userLogRepository.getEndpointHitCountPerUser(query));
     }
 

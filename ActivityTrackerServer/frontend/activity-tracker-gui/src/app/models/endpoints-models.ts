@@ -13,6 +13,7 @@ export interface EndpointsQuery {
   timeRange?: TimeRange;
   endpointName?: string;
   activityUserId?: string;
+  sessionId? :string;
 }
 
 export enum EndpointSortingProperty {

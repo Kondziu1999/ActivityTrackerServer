@@ -25,6 +25,8 @@ import { UserLogsComponent } from './user-logs/user-logs.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
+import {MatSelectModule} from "@angular/material/select";
+import { ActivitiesCountChartComponent } from './user-logs/activities-count-chart/activities-count-chart.component';
 
 @NgModule({
   declarations: [
@@ -34,30 +36,32 @@ import { MatCardModule } from '@angular/material/card';
     NavbarComponent,
     EndpointsFilterTableComponent,
     UsersFilterTableComponent,
-    UserLogsComponent
+    UserLogsComponent,
+    ActivitiesCountChartComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    HttpClientModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatDatepickerModule,
-    NgxMatDatetimePickerModule,
-    NgxMatTimepickerModule,
-    NgxMatNativeDateModule,
-    ReactiveFormsModule,
-    NgxChartsModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatCardModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        HttpClientModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        NgxMatDatetimePickerModule,
+        NgxMatTimepickerModule,
+        NgxMatNativeDateModule,
+        ReactiveFormsModule,
+        NgxChartsModule,
+        MatButtonModule,
+        MatButtonToggleModule,
+        MatCardModule,
+        MatSelectModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

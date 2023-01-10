@@ -10,41 +10,136 @@
     </h1>
     </div>
     <mat-card class="card">
-        <mat-card-content class="card__content">
-            <div class="data-field">
-                <span class="data-field__header">
-                    Username:
-                </span>
-                <span class="data-field__value">
-                    {{ user?.username }}
-                </span>
-            </div>
-            <div class="data-field">
-                <span class="data-field__header">
-                    Id:
-                </span>
-                <span class="data-field__value">
-                    {{ user?.id }}
-                </span>
-            </div>
-            <div class="data-field">
-                <span class="data-field__header">
-                    Name:
-                </span>
-                <span class="data-field__value">
-                    {{ user?.name }}
-                </span>
-            </div>
-            <div class="data-field">
-                <span class="data-field__header">
-                    Email address:
-                </span>
-                <span class="data-field__value">
-                    {{ user?.email }}
-                </span>
-            </div>
-        </mat-card-content>
+      <mat-card-content class="card__content">
+        <div class="data-field">
+                    <span class="data-field__header">
+                        Username:
+                    </span>
+          <span class="data-field__value">
+                        {{ user?.username }}
+                    </span>
+        </div>
+        <div class="data-field">
+                    <span class="data-field__header">
+                        Id:
+                    </span>
+          <span class="data-field__value">
+                        {{ user?.id }}
+                    </span>
+        </div>
+        <div class="data-field">
+                    <span class="data-field__header">
+                        Name:
+                    </span>
+          <span class="data-field__value">
+                        {{ user?.name }}
+                    </span>
+        </div>
+        <div class="data-field">
+                    <span class="data-field__header">
+                        Email address:
+                    </span>
+          <span class="data-field__value">
+                        {{ user?.email }}
+                    </span>
+        </div>
+      </mat-card-content>
     </mat-card>
+    <br>
+    <ng-container *ngIf="userSessionStats$ | async as stats">
+      <form style="padding-left: 20px" [formGroup]="form">
+        <mat-form-field>
+          <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="Date from" formControlName="from">
+          <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
+        </mat-form-field>
+        <mat-form-field style="padding-left: 20px">
+          <input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="Date to" formControlName="to"
+                 [min]="form.get('from').value">
+          <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Session</mat-label>
+          <mat-select placeholder="All" formControlName="session">
+            <mat-option [value]="undefined">All</mat-option>
+            <mat-option *ngFor="let sessionId of stats.sessions" [value]="sessionId">
+              {{sessionId}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+      <br>
+      <div class="cards">
+        <mat-card class="card">
+          <mat-card-content class="card__content">
+            <div class="data-field">
+            <span class="data-field__header">
+                sessions count:
+            </span>
+              <span class="data-field__value">
+                {{ stats.sessionsCount }}
+            </span>
+            </div>
+            <div class="data-field">
+            <span class="data-field__header">
+                Maximum activity count per user session:
+            </span>
+              <span class="data-field__value">
+                {{ stats.maximumActivityCountsPerSession }}
+            </span>
+            </div>
+            <div class="data-field">
+            <span class="data-field__header">
+                Minimum activity count per user session:
+            </span>
+              <span class="data-field__value">
+                {{ stats.minimumActivityCountsPerSession }}
+            </span>
+            </div>
+            <div class="data-field">
+            <span class="data-field__header">
+                Total activities count:
+            </span>
+              <span class="data-field__value">
+                {{ stats.totalActivitiesCount }}
+            </span>
+            </div>
+            <div class="data-field">
+            <span class="data-field__header">
+                Most popular endpoint:
+            </span>
+              <span class="data-field__value">
+                {{ stats.mostPopularEndpoint }}
+            </span>
+            </div>
+            <div class="data-field">
+            <span class="data-field__header">
+                Most popular endpoint count:
+            </span>
+              <span class="data-field__value">
+                {{ stats.mostPopularEndpointCount }}
+            </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="card">
+          <mat-card-content class="card__content" *ngIf="userLogCountBuckets$ | async as buckets">
+            <app-activities-count-chart [buckets]="buckets"></app-activities-count-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <br>
+    </ng-container>
+
+    <h1 style="padding-top: 1rem; padding-left: 12px">
+      Endpoints
+    </h1>
+    <mat-card class="logs-table">
+      <app-endpoints-filter-table [forUserId]="userId" [sessionIdControl]="sessionIdControl" [timesForm]="form"></app-endpoints-filter-table>
+    </mat-card>
+
     <h1 style="padding-top: 1rem; padding-left: 12px">
         User logs
     </h1>
@@ -68,17 +163,17 @@
             <th mat-header-cell *matHeaderCellDef> Activity end </th>
             <td mat-cell *matCellDef="let element"> {{element.activityEnd | date: 'dd/MM/yyyy, HH:MM:SS'}} </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr class="row-hover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="logsDisplayedColumns"></tr>
+          <tr class="row-hover" mat-row *matRowDef="let row; columns: logsDisplayedColumns;"></tr>
           <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <td class="mat-cell" [attr.colspan]="logsDisplayedColumns.length">
               No data matching the filters
             </td>
           </tr>
         </table>
-        <mat-paginator [pageSizeOptions]="[10, 20, 30]"
+        <mat-paginator #logsPaginator [pageSizeOptions]="[10, 20, 30]"
                        pageSize="10"
-                       [length]="resultsLength"
+                       [length]="logsResultsLength"
                        showFirstLastButtons
                        aria-label="Select page of periodic elements">
         </mat-paginator>

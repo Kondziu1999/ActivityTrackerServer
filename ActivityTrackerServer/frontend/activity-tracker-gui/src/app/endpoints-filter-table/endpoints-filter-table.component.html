@@ -4,7 +4,7 @@
     <input matInput placeholder="Endpoint name..." #input>
   </mat-form-field>
 
-  <form style="padding-left: 20px" [formGroup]="timesForm">
+  <form style="padding-left: 20px" [formGroup]="timesForm" *ngIf="!externalTimesForm">
     <mat-form-field>
       <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="Date from" formControlName="from">
 

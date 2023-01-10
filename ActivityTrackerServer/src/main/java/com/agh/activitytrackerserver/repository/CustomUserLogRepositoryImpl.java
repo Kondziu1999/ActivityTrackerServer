@@ -159,7 +159,7 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
     }
 
     @Override
-    public List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange) {
+    public List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange, String sessionId) {
         CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
         CriteriaQuery<UserLog> q = criteriaBuilder
                 .createQuery(UserLog.class);
@@ -167,6 +167,10 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         Root<UserLog> root = q.from(UserLog.class);
 
         ArrayList<Predicate> predicates = new ArrayList<>();
+
+        if(sessionId != null && sessionId.length() > 0) {
+            predicates.add(criteriaBuilder.equal(root.get("userSessionId").as(String.class), sessionId));
+        }
 
         predicates.addAll(getTimeRangePredicates(timeRange, root, criteriaBuilder));
         predicates.add(criteriaBuilder.equal(root.get("activityUserId").as(String.class), userId));
@@ -328,6 +332,11 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
         if(userId != null && userId.length() > 0) {
             predicates.add(criteriaBuilder.equal(root.get("activityUserId"), userId));
             cPredicates.add(criteriaBuilder.equal(cRoot.get("activityUserId"), userId));
+        }
+
+        if(query.getSessionId() != null && query.getSessionId().length() > 0) {
+            predicates.add(criteriaBuilder.equal(root.get("userSessionId").as(String.class), query.getSessionId()));
+            cPredicates.add(criteriaBuilder.equal(cRoot.get("userSessionId").as(String.class), query.getSessionId()));
         }
 
         predicates.addAll(getTimeRangePredicates(query.getTimeRange(), root, criteriaBuilder));

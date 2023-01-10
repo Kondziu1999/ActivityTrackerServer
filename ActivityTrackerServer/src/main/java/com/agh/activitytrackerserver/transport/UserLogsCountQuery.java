@@ -9,4 +9,5 @@ public class UserLogsCountQuery {
     private String userId;
     private TimeRange timeRange;
     private long bucketSize; // In milis as timestamp
+    private String sessionId;
 }

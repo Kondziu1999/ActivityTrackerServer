@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -9,13 +9,7 @@ import { SortingDirection } from '../models/common-models';
 import { UsersOverviewQuery, UserWithActivitiesCount } from '../models/users-models';
 import { UsersService } from '../service/users.service';
 import { UsersDs } from '../users/users-ds';
-
-function getYesterday(): Date {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  return yesterday;
-}
+import {getTimesForm, getYesterday} from "../utils/date-utils";
 
 const defaultQuery: UsersOverviewQuery = {
   page: 0,
@@ -33,13 +27,7 @@ const defaultQuery: UsersOverviewQuery = {
   styleUrls: ['./users-filter-table.component.scss']
 })
 export class UsersFilterTableComponent implements AfterViewInit, OnInit {
-  private today = new Date();
-  private yesterday = getYesterday();
-
-  timesForm: FormGroup = new FormGroup({
-    from: new FormControl(this.yesterday),
-    to: new FormControl(this.today)
-  });
+  timesForm: FormGroup = getTimesForm();
 
   readonly displayedColumns: string[] = ['position', 'userId', 'username', 'email', 'name', 'activitiesCount'];
 
@@ -73,7 +61,7 @@ export class UsersFilterTableComponent implements AfterViewInit, OnInit {
     .pipe(
       tap(() => this.paginator.pageIndex = 0)
     );
-    
+
     merge(
       this.sort.sortChange,
       this.paginator.page,

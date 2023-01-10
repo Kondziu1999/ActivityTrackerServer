@@ -23,7 +23,7 @@ public interface CustomUserLogRepository {
 
     PageResponse<UserLog> getEndpointLogs(EndpointLogsQuery query);
 
-    List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange);
+    List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange, String sessionId);
 
     PageResponse<EndpointNameWithCount> getUserLogsCountPerEndpoint(UserLogsCountPerEndpointQuery query);
 }

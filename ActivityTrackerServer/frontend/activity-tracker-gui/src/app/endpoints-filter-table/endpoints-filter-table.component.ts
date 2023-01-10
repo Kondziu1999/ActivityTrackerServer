@@ -7,14 +7,9 @@ import {EndpointsService} from "../service/endpoints.service";
 import {MatSort} from '@angular/material/sort';
 import {fromEvent, merge} from "rxjs";
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap, tap} from "rxjs/operators";
-import {FormControl, FormGroup} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
+import {getTimesForm, getYesterday, getTimeRangeFromTimesForm} from "../utils/date-utils";
 
-function getYesterday(): Date {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  return yesterday;
-}
 const defaultQuery: EndpointsQuery = {
   page:0,
   pageSize: 10,
@@ -33,15 +28,23 @@ const defaultQuery: EndpointsQuery = {
 })
 export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
 
-  @Input() forUserId: string = null;
+  @Input() forUserId: string | undefined;
+  // Default control to make merge below happy
+  @Input() sessionIdControl: AbstractControl = new FormControl(undefined);
 
-  private today = new Date();
-  private yesterday = getYesterday();
+  private _timesForm = getTimesForm();
 
-  timesForm: FormGroup = new FormGroup({
-    from: new FormControl(this.yesterday), // yesterday
-    to: new FormControl(this.today)
-  });
+  @Input() set timesForm(form: FormGroup) {
+    if(form) {
+      this.externalTimesForm = true
+      this._timesForm = form;
+    }
+  }
+  get timesForm() {
+    return this._timesForm;
+  }
+
+  externalTimesForm: boolean;
 
   readonly displayedColumns: string[] = ['position', 'endpoint', 'logsCount'];
 
@@ -59,10 +62,11 @@ export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.endpointsDs = new EndpointsDs(this.endpointsService);
-    this.endpointsDs.loadEndpoints(defaultQuery);
   }
 
   ngAfterViewInit(): void {
+    this.endpointsDs.loadEndpoints({...defaultQuery, activityUserId: this.forUserId ?? undefined});
+
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     const inputChange = fromEvent(this.input.nativeElement,'keyup').pipe(
       distinctUntilChanged(),
@@ -73,9 +77,11 @@ export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
       this.sort.sortChange,
       this.paginator.page,
       inputChange,
-      this.timesForm.valueChanges,
+      this._timesForm.valueChanges,
+      this.sessionIdControl.valueChanges,
     )
       .pipe(
+        debounceTime(100),
         map(() => {
           const query: EndpointsQuery = {
             page: this.paginator.pageIndex,
@@ -83,15 +89,13 @@ export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
             endpointName: this.input.nativeElement.value ?? null,
             sortingDirection: this.sort.direction === 'asc' ? SortingDirection.Asc : SortingDirection.Desc,
             sortingProperty: EndpointSortingProperty.ActivityFrequency,
-            timeRange: {
-              from: (this.timesForm.get("from").value as Date).getTime(),
-              to: (this.timesForm.get("to").value as Date).getTime(),
-            },
-            activityUserId: this.forUserId ?? null
+            timeRange: getTimeRangeFromTimesForm(this._timesForm),
+            activityUserId: this.forUserId ?? null,
+            sessionId: this.sessionIdControl?.value ?? null
           }
           return query;
         }),
-        startWith(defaultQuery),
+        startWith({...defaultQuery, activityUserId: this.forUserId ?? undefined}),
         switchMap(query =>
           this.endpointsDs.loadEndpoints(query)
         ),

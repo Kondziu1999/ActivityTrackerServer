@@ -11,6 +11,8 @@ public class EndpointsQuery {
     private EndpointSortingProperty sortingProperty;
     private SortingDirection sortingDirection;
     private TimeRange timeRange;
+    // Optionals
     private String endpointName;
     private String activityUserId;
+    private String sessionId;
 }

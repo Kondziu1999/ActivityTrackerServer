@@ -14,6 +14,8 @@ export interface LogsForUserQuery {
     page: number;
     pageSize: number;
     sessionId?: string;
+    timeRange: TimeRange;
+    sortingDirection: SortingDirection;
 };
 
 export interface User {
@@ -36,3 +38,39 @@ export interface UsersOverviewQuery {
     timeRange?: TimeRange;
     sortingDirection: SortingDirection;
 };
+
+export interface UserSessionStatsQuery {
+  userId: string;
+  timeRange: TimeRange;
+}
+
+export interface UserSessionStats {
+  sessions: string[],
+  sessionsCount: number,
+  maximumActivityCountsPerSession: number,
+  minimumActivityCountsPerSession: number,
+  totalActivitiesCount: number,
+  mostPopularEndpoint: string,
+  mostPopularEndpointCount: number
+}
+
+export interface UserLogsCountPerEndpointQuery {
+  page: number;
+  pageSize: number;
+  timeRange: TimeRange;
+  userId: string;
+  sortingDirection: SortingDirection;
+}
+
+export interface UserLogsCountQuery {
+  userId: string;
+  timeRange: TimeRange;
+  bucketSize: number;
+  sessionId?: string;
+}
+
+export interface UserLogsCountBucket {
+  from: number;
+  to: number;
+  count: number;
+}
