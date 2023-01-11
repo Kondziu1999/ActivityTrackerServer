@@ -39,3 +39,15 @@ export interface EndpointLogsQuery {
   timeRange: TimeRange;
   sortingDirection: SortingDirection;
 }
+
+export interface EndpointBucketQuery {
+  endpointName: string;
+  timeRange: TimeRange;
+  bucketSize: number;
+}
+
+export interface EndpointBucket {
+  from: number;
+  to: number;
+  count: number;
+}

@@ -22,6 +22,7 @@ public interface CustomUserLogRepository {
     PageResponse<UserLog> getUserLogs(GetLogsForUserQuery query);
 
     PageResponse<UserLog> getEndpointLogs(EndpointLogsQuery query);
+    List<UserLog> getAllEndpointLogsForTimeRangeAsc(TimeRange timeRange, String endpointName);
 
     List<UserLog> getUserLogsForTimeRangeAsc(String userId, TimeRange timeRange, String sessionId);
 

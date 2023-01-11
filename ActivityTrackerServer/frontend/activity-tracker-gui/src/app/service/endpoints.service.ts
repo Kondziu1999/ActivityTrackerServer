@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {EndpointHitCountPerUserQuery, EndpointHitCountQuery, EndpointLogsQuery, EndpointNameWithCount, EndpointsQuery} from "../models/endpoints-models";
+import {EndpointBucket, EndpointBucketQuery, EndpointHitCountPerUserQuery, EndpointHitCountQuery, EndpointLogsQuery, EndpointNameWithCount, EndpointsQuery} from "../models/endpoints-models";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {PageResponse} from "../models/common-models";
@@ -28,5 +28,9 @@ export class EndpointsService {
 
   public getEndpointLogs(query: EndpointLogsQuery): Observable<PageResponse<Log>> {
     return this.http.post<PageResponse<Log>>(`${this.apiUrl}/getEndpointLogs`, query);
+  }
+
+  public getEndpointBuckets(query: EndpointBucketQuery): Observable<EndpointBucket[]> {
+    return this.http.post<EndpointBucket[]>(`${this.apiUrl}/getEndpointBuckets`, query);
   }
 }
