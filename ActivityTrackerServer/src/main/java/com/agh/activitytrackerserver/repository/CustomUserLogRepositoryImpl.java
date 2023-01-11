@@ -228,6 +228,25 @@ public class CustomUserLogRepositoryImpl implements CustomUserLogRepository {
     }
 
     @Override
+    public List<UserLog> getAllEndpointLogsForTimeRangeAsc(TimeRange timeRange, String endpointName) {
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<UserLog> q = criteriaBuilder
+                .createQuery(UserLog.class);
+
+        Root<UserLog> root = q.from(UserLog.class);
+
+        ArrayList<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.equal(root.get("endpoint").as(String.class), endpointName));
+        predicates.addAll(getTimeRangePredicates(timeRange, root, criteriaBuilder));
+
+        q.select(root);
+        q.where(predicates.toArray(new Predicate[0]));
+        q.orderBy(criteriaBuilder.asc(root.get("activityEnd")));
+
+        return em.createQuery(q).getResultList();
+    }
+
+    @Override
     public PageResponse<EndpointHitCountPerUser> getEndpointHitCountPerUser(EndpointHitCountPerUserQuery query) {
         CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
         CriteriaQuery<EndpointHitCountPerUser> q = criteriaBuilder

@@ -213,4 +213,63 @@ public class GuiController {
         return ResponseEntity.ok(userLogRepository.getEndpointLogs(query));
     }
 
+    @PostMapping("/getEndpointBuckets")
+    public ResponseEntity<LinkedList<EndpointBucket>> getEndpointBuckets(@RequestBody() EndpointBucketQuery query) {
+        var logs = userLogRepository.getAllEndpointLogsForTimeRangeAsc(query.getTimeRange(), query.getEndpointName());
+        var buckets = new LinkedList<EndpointBucket>();
+
+        if(logs.size() > 0) {
+            var firstTimestamp = logs.get(0).getActivityEnd();
+            var lastTimestamp = logs.get(logs.size() - 1).getActivityEnd();
+
+            if(firstTimestamp - query.getBucketSize() > query.getTimeRange().getFrom()) {
+                var startBucket = new EndpointBucket();
+                startBucket.setFrom(query.getTimeRange().getFrom());
+                startBucket.setTo(query.getTimeRange().getFrom() + query.getBucketSize());
+                buckets.add(startBucket);
+            }
+
+            // To decrease interpolation interference
+            if(firstTimestamp - 2 * query.getBucketSize() > query.getTimeRange().getFrom()) {
+                var startBucket = new EndpointBucket();
+                startBucket.setFrom(firstTimestamp - 2 * query.getBucketSize());
+                startBucket.setTo(firstTimestamp - query.getBucketSize());
+                buckets.add(startBucket);
+            }
+
+            while (firstTimestamp <= lastTimestamp) {
+                var bucket = new EndpointBucket();
+                bucket.setFrom(firstTimestamp);
+                bucket.setTo(firstTimestamp + query.getBucketSize());
+                firstTimestamp = firstTimestamp + query.getBucketSize();
+                buckets.add(bucket);
+            }
+
+            // To decrease interpolation interference
+            if(query.getTimeRange().getTo() > lastTimestamp + 2 * query.getBucketSize()) {
+                var endBucket = new EndpointBucket();
+                endBucket.setFrom(lastTimestamp + query.getBucketSize());
+                endBucket.setTo(lastTimestamp + 2 * query.getBucketSize());
+                buckets.add(endBucket);
+            }
+
+            if(query.getTimeRange().getTo() > lastTimestamp + query.getBucketSize()) {
+                var endBucket = new EndpointBucket();
+                endBucket.setFrom(query.getTimeRange().getTo() - query.getBucketSize());
+                endBucket.setTo(query.getTimeRange().getTo());
+                buckets.add(endBucket);
+            }
+
+            var currentBucketIdx = 0;
+
+            for(var log : logs) {
+                while (log.getActivityEnd() > buckets.get(currentBucketIdx).getTo()) {
+                    currentBucketIdx += 1;
+                }
+                buckets.get(currentBucketIdx).incrementCount();
+            }
+        }
+        return ResponseEntity.ok(buckets);
+    }
+
 }

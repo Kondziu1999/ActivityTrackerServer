@@ -19,3 +19,15 @@ export interface EndpointsQuery {
 export enum EndpointSortingProperty {
   ActivityFrequency
 }
+
+export interface EndpointBucketQuery {
+  endpointName: string;
+  timeRange: TimeRange;
+  bucketSize: number;
+}
+
+export interface EndpointBucket {
+  from: number;
+  to: number;
+  count: number;
+}
