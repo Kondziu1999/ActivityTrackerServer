@@ -18,6 +18,6 @@ export class EndpointsService {
   }
 
   public getEndpointBuckets(query: EndpointBucketQuery): Observable<EndpointBucket[]> {
-    return this.http.post<EndpointBucket[]>(`${this.apiUrl}/getEndpointsBuckets`, query);
+    return this.http.post<EndpointBucket[]>(`${this.apiUrl}/getEndpointBuckets`, query);
   }
 }
