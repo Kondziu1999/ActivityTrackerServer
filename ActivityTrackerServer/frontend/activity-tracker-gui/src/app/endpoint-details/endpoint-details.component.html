@@ -1,0 +1,121 @@
+<div style="padding-top: 20px; padding-left: 7px;">
+    <div class="header">
+        <button mat-icon-button color="primary" (click)="goBackToEndpoints()">
+            <mat-icon class="back-arrow">
+                keyboard_arrow_left
+            </mat-icon>
+        </button>
+        <h1>
+            Endpoint details
+        </h1>
+    </div>
+    <mat-card class="card">
+        <mat-card-content class="card__content">
+            <div class="data-field">
+                <span class="data-field__header">
+                    Name:
+                </span>
+                <span class="data-field__value">
+                    {{ endpointName }}
+                </span>
+            </div>
+            <div class="data-field">
+                <span class="data-field__header">
+                    Logs count:
+                </span>
+                <span class="data-field__value">
+                    {{ (endpointHitsCount$ | async)?.count }}
+                </span>
+            </div>
+        </mat-card-content>
+    </mat-card>
+      <br>
+      <form style="padding-left: 20px" [formGroup]="form">
+        <mat-form-field>
+          <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="Date from" formControlName="from">
+          <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
+        </mat-form-field>
+        <mat-form-field style="padding-left: 20px">
+          <input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="Date to" formControlName="to"
+                 [min]="form.get('from').value">
+          <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
+        </mat-form-field>
+      </form>
+      <div style="display: flex; gap: 1rem;">
+        <div style="width: 60%;">
+            <h1 style="padding-top: 1rem; padding-left: 12px">
+            Logs for this endpoint
+            </h1>
+            <mat-card class="logs-table">
+                <table
+                    mat-table
+                    [dataSource]="endpointLogsDs">
+                    <ng-container matColumnDef="userSessionId">
+                    <th mat-header-cell *matHeaderCellDef> User session id </th>
+                    <td mat-cell *matCellDef="let element"> {{element.userSessionId}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="endpoint">
+                    <th mat-header-cell *matHeaderCellDef> Endpoint </th>
+                    <td mat-cell *matCellDef="let element"> {{element.endpoint}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="activityStart">
+                    <th mat-header-cell *matHeaderCellDef> Activity start </th>
+                    <td mat-cell *matCellDef="let element"> {{element.activityStart | date: 'dd/MM/yyyy, HH:MM:SS'}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="activityEnd">
+                    <th mat-header-cell *matHeaderCellDef> Activity end </th>
+                    <td mat-cell *matCellDef="let element"> {{element.activityEnd | date: 'dd/MM/yyyy, HH:MM:SS'}} </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="endpointLogsDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: endpointLogsDisplayedColumns;"></tr>
+                    <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" [attr.colspan]="endpointLogsDisplayedColumns.length">
+                        No data matching the filters
+                    </td>
+                    </tr>
+                </table>
+                <mat-paginator #logsPaginator [pageSizeOptions]="[10, 20, 30]"
+                                pageSize="10"
+                                [length]="logsResultsLength"
+                                showFirstLastButtons
+                                aria-label="Select page of periodic elements">
+                </mat-paginator>
+            </mat-card>
+        </div>
+        <div  style="width: 40%;">
+            <h1 style="padding-top: 1rem; padding-left: 12px">
+                Users that hit this endpoint
+            </h1>
+            <mat-card class="users-table">
+                <table
+                    mat-table
+                    [dataSource]="endpointHitCountPerUserDs">
+                    <ng-container matColumnDef="userId">
+                    <th mat-header-cell *matHeaderCellDef> User id </th>
+                    <td mat-cell *matCellDef="let element"> {{element.userId}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="count">
+                    <th mat-header-cell *matHeaderCellDef> Logs count </th>
+                    <td mat-cell *matCellDef="let element"> {{element.count}} </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="endpointHitCountPerUserDisplayedColumns"></tr>
+                    <tr class="row-hover" mat-row *matRowDef="let row; columns: endpointHitCountPerUserDisplayedColumns;" (click)="navigateToUserDetails(row)"></tr>
+                    <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" [attr.colspan]="endpointHitCountPerUserDisplayedColumns.length">
+                        No data matching the filters
+                    </td>
+                    </tr>
+                </table>
+                <mat-paginator #userHitsPaginator [pageSizeOptions]="[10, 20, 30]"
+                                pageSize="10"
+                                [length]="endpointHitCountPerUserResultsLength"
+                                showFirstLastButtons
+                                aria-label="Select page of periodic elements">
+                </mat-paginator>
+            </mat-card>
+        </div>
+      </div>
+    <br>
+</div>

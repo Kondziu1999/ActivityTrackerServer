@@ -19,3 +19,23 @@ export interface EndpointsQuery {
 export enum EndpointSortingProperty {
   ActivityFrequency
 }
+
+export interface EndpointHitCountQuery {
+  endpointName: string;
+  timeRange: TimeRange;
+}
+
+export interface EndpointHitCountPerUserQuery {
+  page: number;
+  pageSize: number;
+  endpointName: string;
+  timeRange: TimeRange;
+}
+
+export interface EndpointLogsQuery {
+  endpointName: string;
+  page: number;
+  pageSize: number;
+  timeRange: TimeRange;
+  sortingDirection: SortingDirection;
+}

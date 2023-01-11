@@ -74,3 +74,8 @@ export interface UserLogsCountBucket {
   to: number;
   count: number;
 }
+
+export interface EndpointHitCountPerUser {
+  userId: string;
+  count: number;
+}

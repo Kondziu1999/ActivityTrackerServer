@@ -9,6 +9,8 @@ import {fromEvent, merge} from "rxjs";
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap, tap} from "rxjs/operators";
 import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
 import {getTimesForm, getYesterday, getTimeRangeFromTimesForm} from "../utils/date-utils";
+import { Router } from '@angular/router';
+import { EndpointNameWithCount } from "../models/endpoints-models";
 
 const defaultQuery: EndpointsQuery = {
   page:0,
@@ -58,10 +60,14 @@ export class EndpointsFilterTableComponent implements AfterViewInit, OnInit {
 
   endpointsDs: EndpointsDs
 
-  constructor(private endpointsService: EndpointsService) {}
+  constructor(private endpointsService: EndpointsService, private router: Router) {}
 
   ngOnInit() {
     this.endpointsDs = new EndpointsDs(this.endpointsService);
+  }
+
+  public navigateToEndpointDetails(endpointNameWithCount: EndpointNameWithCount): void {
+    this.router.navigate(['/endpoint-details', endpointNameWithCount.name]);
   }
 
   ngAfterViewInit(): void {
