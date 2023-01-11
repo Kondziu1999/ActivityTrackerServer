@@ -43,6 +43,11 @@
           <ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
         </mat-form-field>
       </form>
+      <mat-card class="card">
+        <mat-card-content class="card__content" *ngIf="endpointBuckets$ | async as buckets">
+          <app-activities-count-chart [buckets]="buckets" yAxisLabel="Endpoint hits" xAxisLabel="Date"></app-activities-count-chart>
+        </mat-card-content>
+      </mat-card>
       <div style="display: flex; gap: 1rem;">
         <div style="width: 60%;">
             <h1 style="padding-top: 1rem; padding-left: 12px">

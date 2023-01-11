@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { merge, Observable } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { SortingDirection } from '../models/common-models';
-import { EndpointHitCountPerUserQuery, EndpointLogsQuery, EndpointNameWithCount } from '../models/endpoints-models';
+import { EndpointBucket, EndpointBucketQuery, EndpointHitCountPerUserQuery, EndpointLogsQuery, EndpointNameWithCount } from '../models/endpoints-models';
 import { EndpointHitCountPerUser } from '../models/users-models';
 import { EndpointsService } from '../service/endpoints.service';
 import { getTimeRangeFromTimesForm, getTimesForm } from '../utils/date-utils';
@@ -25,6 +25,7 @@ export class EndpointDetailsComponent implements OnInit, AfterViewInit {
   });
 
   public endpointHitsCount$: Observable<EndpointNameWithCount>;
+  public endpointBuckets$: Observable<EndpointBucket[]>;
 
   public endpointLogsDs: EndpointLogsDs;
   public endpointLogsDisplayedColumns: string[] = ['userSessionId', 'activityStart', 'activityEnd'];
@@ -119,6 +120,15 @@ export class EndpointDetailsComponent implements OnInit, AfterViewInit {
         endpointName: this.endpointName,
         timeRange: getTimeRangeFromTimesForm(this.form),
       })));
+    
+    this.endpointBuckets$ = this.form.valueChanges.pipe(
+      startWith(() => this.form.value),
+      switchMap(() => this.endpointsService.getEndpointBuckets({
+        endpointName: this.endpointName,
+        timeRange: getTimeRangeFromTimesForm(this.form),
+        bucketSize: 10000
+      } as EndpointBucketQuery))
+    );
   }
 
   public goBackToEndpoints(): void {
