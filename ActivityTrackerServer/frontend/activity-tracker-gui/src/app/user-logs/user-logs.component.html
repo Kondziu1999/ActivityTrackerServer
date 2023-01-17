@@ -59,7 +59,7 @@
           <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
           <ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
         </mat-form-field>
-        <mat-form-field appearance="fill">
+        <mat-form-field style="margin-left: 20px;">
           <mat-label>Session</mat-label>
           <mat-select placeholder="All" formControlName="session">
             <mat-option [value]="undefined">All</mat-option>
@@ -126,7 +126,7 @@
 
         <mat-card class="card">
           <mat-card-content class="card__content" *ngIf="userLogCountBuckets$ | async as buckets">
-            <app-activities-count-chart [buckets]="buckets"></app-activities-count-chart>
+            <app-activities-count-chart [buckets]="buckets" yAxisLabel="Activity count" xAxisLabel="Date"></app-activities-count-chart>
           </mat-card-content>
         </mat-card>
       </div>
@@ -136,10 +136,9 @@
     <h1 style="padding-top: 1rem; padding-left: 12px">
       Endpoints
     </h1>
-    <mat-card class="logs-table">
+    <div style="width: 70%; margin-left: 15px;">
       <app-endpoints-filter-table [forUserId]="userId" [sessionIdControl]="sessionIdControl" [timesForm]="form"></app-endpoints-filter-table>
-    </mat-card>
-
+    </div>
     <h1 style="padding-top: 1rem; padding-left: 12px">
         User logs
     </h1>

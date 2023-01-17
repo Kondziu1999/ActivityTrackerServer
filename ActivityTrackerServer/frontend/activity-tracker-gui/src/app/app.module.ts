@@ -27,6 +27,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import {MatSelectModule} from "@angular/material/select";
 import { ActivitiesCountChartComponent } from './user-logs/activities-count-chart/activities-count-chart.component';
+import { EndpointDetailsComponent } from './endpoint-details/endpoint-details.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ActivitiesCountChartComponent } from './user-logs/activities-count-char
     EndpointsFilterTableComponent,
     UsersFilterTableComponent,
     UserLogsComponent,
-    ActivitiesCountChartComponent
+    ActivitiesCountChartComponent,
+    EndpointDetailsComponent
   ],
     imports: [
         BrowserModule,

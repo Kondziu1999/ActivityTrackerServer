@@ -28,8 +28,8 @@ export class ActivitiesCountChartComponent {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = 'name';
-  yAxisLabel: string = 'value';
+  @Input() xAxisLabel: string = 'name';
+  @Input() yAxisLabel: string = 'value';
   timeline: boolean = false;
 
   colorScheme = {
