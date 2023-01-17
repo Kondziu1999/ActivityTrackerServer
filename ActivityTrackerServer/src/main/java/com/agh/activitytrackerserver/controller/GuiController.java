@@ -87,9 +87,16 @@ public class GuiController {
         var sessionsCount = sessionsMap.size();
         var maximumActivityCountsPerSession = Integer.MIN_VALUE;
         var minimumActivityCountsPerSession = Integer.MAX_VALUE;
+
         var totalActivitiesCount = 0;
         var mostPopularEndpoint = "";
         var mostPopularEndpointCount = 0;
+
+        if(sessionsMap.size() == 0) {
+            maximumActivityCountsPerSession = 0;
+            minimumActivityCountsPerSession = 0;
+            mostPopularEndpoint = null;
+        }
 
         for(var key : sessionsMap.keySet()) {
             var logsForSession = sessionsMap.get(key);
